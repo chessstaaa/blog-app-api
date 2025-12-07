@@ -7,22 +7,125 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Sample {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model User {
+  id             Int           @id @default(autoincrement())
+  name           String
+  email          String        @unique
+  password       String
+  role           String
+  referral_code  String
+  points_balance Int
+  createdAt      DateTime      @default(now())
+  events         Event[]
+  reviews        Review[]
+  transactions   Transaction[]
+  vouchers       Voucher[]
 
-  @@map("samples")
+  @@map("users")
 }
 
-model Product {
-  id        Int      @id @default(autoincrement())
-  title     String
-  price     Int
-  image     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Event {
+  id              Int           @id @default(autoincrement())
+  organizerId     Int
+  organizer       User          @relation(fields: [organizerId], references: [id])
+  title           String
+  description     String
+  categoryId      Int
+  category        Category      @relation(fields: [categoryId], references: [id])
+  location        String
+  price           Int
+  startAt         DateTime
+  endAt           DateTime
+  total_seats     Int
+  available_seats Int
+  is_free         Boolean
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  tickets         Ticket[]
+  reviews         Review[]
+  transactions    Transaction[]
+  vouchers        Voucher[]
 
-  @@map("products")
+  @@map("events")
+}
+
+model Category {
+  id     Int     @id @default(autoincrement())
+  name   String
+  events Event[]
+
+  @@map("categories")
+}
+
+model Ticket {
+  id                 Int           @id @default(autoincrement())
+  event_id           Int
+  event              Event         @relation(fields: [event_id], references: [id])
+  name               String
+  price              Int
+  quantity_available Int
+  transactions       Transaction[]
+
+  @@map("tickets")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  user      User     @relation(fields: [user_id], references: [id])
+  event_id  Int
+  event     Event    @relation(fields: [event_id], references: [id])
+  rating    Int
+  comment   String
+  createdAt DateTime
+
+  @@map("reviews")
+}
+
+model Transaction {
+  id                Int      @id @default(autoincrement())
+  user_id           Int
+  user              User     @relation(fields: [user_id], references: [id])
+  event_id          Int
+  event             Event    @relation(fields: [event_id], references: [id])
+  ticket_id         Int
+  ticket            Ticket   @relation(fields: [ticket_id], references: [id])
+  voucher_id        Int
+  voucher           Voucher  @relation(fields: [voucher_id], references: [id])
+  quantity          Int
+  total_price       Int
+  status            String
+  payment_proof_url String
+  expiresAt         DateTime
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  points_used       Int
+
+  @@map("transactions")
+}
+
+model Voucher {
+  id              Int           @id @default(autoincrement())
+  organizer_id    Int
+  organizer       User          @relation(fields: [organizer_id], references: [id])
+  event_id        Int
+  event           Event         @relation(fields: [event_id], references: [id])
+  code            String
+  discount_amount Int
+  startAt         DateTime
+  endAt           DateTime
+  usage_limit     Int
+  used_count      Int
+  transactions    Transaction[]
+
+  @@map("vouchers")
+}
+
+enum Status {
+  WAITING_FOR_PAYMENT
+  WAITING_FOR_ADMIN_CONFIRMATION
+  DONE
+  REJECTED
+  EXPIRED
+  CANCELED
 }
