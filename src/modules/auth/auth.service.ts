@@ -25,8 +25,8 @@ export class AuthService {
         ...body,
         password: hashedPassword,
         role: "user",
-        referral_code: "",
-        points_balance: 0,
+        referralCode: "",
+        pointsBalance: 0,
       },
     });
 
