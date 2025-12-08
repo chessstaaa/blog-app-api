@@ -12,8 +12,8 @@ export class AuthRouter {
   }
 
   private initRoutes = () => {
-    this.router.get("/register", this.authController.registerController);
-    this.router.get("/login", this.authController.loginController);
+    this.router.post("/register", this.authController.registerController);
+    this.router.post("/login", this.authController.loginController);
   };
 
   getRouter = () => {
