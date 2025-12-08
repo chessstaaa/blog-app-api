@@ -4,6 +4,7 @@ import express, { Express } from "express";
 import { PORT } from "./config/env";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import { EventRouter } from "./modules/event/event.router";
+import { AuthRouter } from "./modules/auth/auth.router";
 
 export class App {
   app: Express;
@@ -22,8 +23,10 @@ export class App {
 
   private routes() {
     const eventRouter = new EventRouter();
+    const authRouter = new AuthRouter();
 
     this.app.use("/event", eventRouter.getRouter());
+    this.app.use("/auth", authRouter.getRouter());
   }
 
   private handleError() {
