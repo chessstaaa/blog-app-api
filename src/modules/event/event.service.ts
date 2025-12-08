@@ -25,9 +25,9 @@ export class EventService {
     return events;
   };
 
-  getEventById = async (id: number) => {
+  getEventByTitle = async (title: string) => {
     const event = await this.prisma.event.findFirst({
-      where: { id: id },
+      where: { title },
     });
 
     if (!event) throw new ApiError("Event not found", 404);

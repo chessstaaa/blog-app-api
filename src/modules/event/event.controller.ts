@@ -21,9 +21,9 @@ export class EventController {
     return res.status(200).send(result);
   };
 
-  getEventById = async (req: Request, res: Response) => {
-    const id = Number(req.params.id);
-    const result = await this.eventService.getEventById(id);
+  getEventByTitle = async (req: Request, res: Response) => {
+    const title = req.params.title;
+    const result = await this.eventService.getEventByTitle(title);
     return res.status(200).send(result);
   };
 }

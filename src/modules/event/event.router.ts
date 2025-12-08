@@ -13,7 +13,7 @@ export class EventRouter {
 
   private initRoutes = () => {
     this.router.get("/", this.eventController.getEvents);
-    this.router.get("/:id", this.eventController.getEventById);
+    this.router.get("/:id", this.eventController.getEventByTitle);
   };
 
   getRouter = () => {
