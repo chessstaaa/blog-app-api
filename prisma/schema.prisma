@@ -8,18 +8,18 @@ datasource db {
 }
 
 model User {
-  id             Int           @id @default(autoincrement())
-  name           String
-  email          String        @unique
-  password       String
-  role           String
-  referral_code  String
-  points_balance Int
-  createdAt      DateTime      @default(now())
-  events         Event[]
-  reviews        Review[]
-  transactions   Transaction[]
-  vouchers       Voucher[]
+  id            Int           @id @default(autoincrement())
+  name          String
+  email         String        @unique
+  password      String
+  role          String
+  referralCode  String
+  pointsBalance Int
+  createdAt     DateTime      @default(now())
+  events        Event[]
+  reviews       Review[]
+  transactions  Transaction[]
+  vouchers      Voucher[]
 
   @@map("users")
 }
@@ -58,65 +58,65 @@ model Category {
 }
 
 model Ticket {
-  id                 Int           @id @default(autoincrement())
-  event_id           Int
-  event              Event         @relation(fields: [event_id], references: [id])
-  name               String
-  price              Int
-  quantity_available Int
-  transactions       Transaction[]
+  id                Int           @id @default(autoincrement())
+  eventId           Int
+  event             Event         @relation(fields: [eventId], references: [id])
+  name              String
+  price             Int
+  quantityAvailable Int
+  transactions      Transaction[]
 
   @@map("tickets")
 }
 
 model Review {
   id        Int      @id @default(autoincrement())
-  user_id   Int
-  user      User     @relation(fields: [user_id], references: [id])
-  event_id  Int
-  event     Event    @relation(fields: [event_id], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  eventId   Int
+  event     Event    @relation(fields: [eventId], references: [id])
   rating    Int
   comment   String
-  createdAt DateTime
+  createdAt DateTime @default(now())
 
   @@map("reviews")
 }
 
 model Transaction {
-  id                Int      @id @default(autoincrement())
-  user_id           Int
-  user              User     @relation(fields: [user_id], references: [id])
-  event_id          Int
-  event             Event    @relation(fields: [event_id], references: [id])
-  ticket_id         Int
-  ticket            Ticket   @relation(fields: [ticket_id], references: [id])
-  voucher_id        Int
-  voucher           Voucher  @relation(fields: [voucher_id], references: [id])
-  quantity          Int
-  total_price       Int
-  status            String
-  payment_proof_url String
-  expiresAt         DateTime
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  points_used       Int
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id])
+  eventId         Int
+  event           Event    @relation(fields: [eventId], references: [id])
+  ticketId        Int
+  ticket          Ticket   @relation(fields: [ticketId], references: [id])
+  voucherId       Int
+  voucher         Voucher  @relation(fields: [voucherId], references: [id])
+  quantity        Int
+  totalPrice      Int
+  status          String
+  paymentProofUrl String
+  expiresAt       DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  pointsUsed      Int
 
   @@map("transactions")
 }
 
 model Voucher {
-  id              Int           @id @default(autoincrement())
-  organizer_id    Int
-  organizer       User          @relation(fields: [organizer_id], references: [id])
-  event_id        Int
-  event           Event         @relation(fields: [event_id], references: [id])
-  code            String
-  discount_amount Int
-  startAt         DateTime
-  endAt           DateTime
-  usage_limit     Int
-  used_count      Int
-  transactions    Transaction[]
+  id             Int           @id @default(autoincrement())
+  organizerId    Int
+  organizer      User          @relation(fields: [organizerId], references: [id])
+  eventId        Int
+  event          Event         @relation(fields: [eventId], references: [id])
+  code           String
+  discountAmount Int
+  startAt        DateTime
+  endAt          DateTime
+  usageLimit     Int
+  usedCount      Int
+  transactions   Transaction[]
 
   @@map("vouchers")
 }
