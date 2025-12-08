@@ -6,6 +6,7 @@ import { errorMiddleware } from "./middlewares/error.middleware";
 import { EventRouter } from "./modules/event/event.router";
 import { AuthRouter } from "./modules/auth/auth.router";
 import { ReviewRouter } from "./modules/review/review.router";
+import { CategoryRouter } from "./modules/category/category.router";
 
 export class App {
   app: Express;
@@ -26,10 +27,12 @@ export class App {
     const eventRouter = new EventRouter();
     const authRouter = new AuthRouter();
     const reviewRouter = new ReviewRouter();
+    const categoryRouter = new CategoryRouter();
 
     this.app.use("/event", eventRouter.getRouter());
     this.app.use("/auth", authRouter.getRouter());
     this.app.use("/review", reviewRouter.getRouter());
+    this.app.use("/category", categoryRouter.getRouter());
   }
 
   private handleError() {

@@ -25,26 +25,26 @@ model User {
 }
 
 model Event {
-  id              Int           @id @default(autoincrement())
-  organizerId     Int
-  organizer       User          @relation(fields: [organizerId], references: [id])
-  title           String        @unique
-  description     String
-  categoryId      Int
-  category        Category      @relation(fields: [categoryId], references: [id])
-  location        String
-  price           Int
-  startAt         DateTime
-  endAt           DateTime
-  total_seats     Int
-  available_seats Int
-  is_free         Boolean
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  tickets         Ticket[]
-  reviews         Review[]
-  transactions    Transaction[]
-  vouchers        Voucher[]
+  id             Int           @id @default(autoincrement())
+  organizerId    Int
+  organizer      User          @relation(fields: [organizerId], references: [id])
+  title          String        @unique
+  description    String
+  categoryId     Int
+  category       Category      @relation(fields: [categoryId], references: [id])
+  location       String
+  price          Int
+  startAt        DateTime
+  endAt          DateTime
+  totaSeats      Int
+  availableSeats Int
+  isFree         Boolean
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  tickets        Ticket[]
+  reviews        Review[]
+  transactions   Transaction[]
+  vouchers       Voucher[]
 
   @@map("events")
 }
