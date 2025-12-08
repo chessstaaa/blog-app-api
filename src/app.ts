@@ -7,6 +7,7 @@ import { EventRouter } from "./modules/event/event.router";
 import { AuthRouter } from "./modules/auth/auth.router";
 import { ReviewRouter } from "./modules/review/review.router";
 import { CategoryRouter } from "./modules/category/category.router";
+import { VoucherRouter } from "./modules/voucher/voucher.router";
 
 export class App {
   app: Express;
@@ -28,11 +29,13 @@ export class App {
     const authRouter = new AuthRouter();
     const reviewRouter = new ReviewRouter();
     const categoryRouter = new CategoryRouter();
+    const voucherRouter = new VoucherRouter();
 
     this.app.use("/event", eventRouter.getRouter());
     this.app.use("/auth", authRouter.getRouter());
     this.app.use("/review", reviewRouter.getRouter());
     this.app.use("/category", categoryRouter.getRouter());
+    this.app.use("/voucher", voucherRouter.getRouter());
   }
 
   private handleError() {
