@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { ReviewService } from "./review.service";
-import { GetEventsQuery } from "../../types/event";
 import { GetReviewsQuery } from "../../types/review";
 
 export class ReviewController {
