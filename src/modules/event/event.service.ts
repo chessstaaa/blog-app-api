@@ -2,12 +2,16 @@ import { Prisma } from "@prisma/client";
 import { GetEventsQuery } from "../../types/event";
 import { ApiError } from "../../utils/api-error";
 import { PrismaService } from "../prisma/prisma.service";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { CreateEventDTO } from "./dto/create-event-dto";
 
 export class EventService {
   prisma: PrismaService;
+  cloudinaryService: CloudinaryService;
 
   constructor() {
     this.prisma = new PrismaService();
+    this.cloudinaryService = new CloudinaryService();
   }
 
   getEvents = async (query: GetEventsQuery) => {
@@ -33,5 +37,26 @@ export class EventService {
     if (!event) throw new ApiError("Event not found", 404);
 
     return event;
+  };
+
+  createEvent = async (
+    body: CreateEventDTO,
+    userId: number,
+    image: Express.Multer.File
+  ) => {
+    const { secure_url } = await this.cloudinaryService.upload(image);
+
+    await this.prisma.event.create({
+      data: {
+        ...body,
+        organizerId: userId,
+        availableSeats: body.totaSeats,
+        image: secure_url,
+      },
+    });
+
+    return {
+      message: "Create event success",
+    };
   };
 }

@@ -39,6 +39,7 @@ model Event {
   totaSeats      Int
   availableSeats Int
   isFree         Boolean
+  image          String
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   tickets        Ticket[]

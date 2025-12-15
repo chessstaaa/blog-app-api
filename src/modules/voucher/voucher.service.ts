@@ -31,18 +31,22 @@ export class VoucherService {
   createVoucher = async (body: CreateVoucherDTO) => {
     let code = "";
     let check = false;
-    while (!check) {
-      const tempCode = generateCodeVoucher();
-      const voucher = await this.prisma.voucher.findFirst({
-        where: {
-          code: tempCode,
-        },
-      });
+    if (!body.code) {
+      while (!check) {
+        const tempCode = generateCodeVoucher();
+        const voucher = await this.prisma.voucher.findFirst({
+          where: {
+            code: tempCode,
+          },
+        });
 
-      if (!voucher) {
-        check = true;
-        code = tempCode;
+        if (!voucher) {
+          check = true;
+          code = tempCode;
+        }
       }
+    } else {
+      code = body.code;
     }
     await this.prisma.voucher.create({
       data: { ...body, code, usedCount: 0 },
