@@ -36,7 +36,7 @@ model Event {
   price          Int
   startAt        DateTime
   endAt          DateTime
-  totaSeats      Int
+  totalSeats      Int
   availableSeats Int
   isFree         Boolean
   image          String
