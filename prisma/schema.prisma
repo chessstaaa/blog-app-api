@@ -36,7 +36,7 @@ model Event {
   price          Int
   startAt        DateTime
   endAt          DateTime
-  totaSeats      Int
+  totalSeats      Int
   availableSeats Int
   isFree         Boolean
   image          String
@@ -84,25 +84,33 @@ model Review {
 }
 
 model Transaction {
-  id              Int      @id @default(autoincrement())
+  id              Int               @id @default(autoincrement())
   userId          Int
-  user            User     @relation(fields: [userId], references: [id])
+  user            User              @relation(fields: [userId], references: [id])
   eventId         Int
-  event           Event    @relation(fields: [eventId], references: [id])
+  event           Event             @relation(fields: [eventId], references: [id])
   ticketId        Int
-  ticket          Ticket   @relation(fields: [ticketId], references: [id])
+  ticket          Ticket            @relation(fields: [ticketId], references: [id])
   voucherId       Int
-  voucher         Voucher  @relation(fields: [voucherId], references: [id])
-  quantity        Int
-  totalPrice      Int
-  status          String
-  paymentProofUrl String
+  voucher         Voucher           @relation(fields: [voucherId], references: [id])
+  qty             Int
+  price           Int
+  status          TransactionStatus @default(WAITING_FOR_PAYMENT)
+  paymentProofUrl String?
   expiresAt       DateTime
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
   pointsUsed      Int
 
   @@map("transactions")
+}
+
+enum TransactionStatus {
+  WAITING_FOR_PAYMENT
+  WAITING_FOR_ADMIN_CONFIRMATION
+  PAID
+  REJECTED
+  EXPIRED
 }
 
 model Voucher {
