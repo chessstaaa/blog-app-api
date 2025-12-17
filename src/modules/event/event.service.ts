@@ -25,8 +25,21 @@ export class EventService {
       where: whereClause,
       take,
       skip: (page - 1) * take,
+      include: {
+        category: true,
+      },
     });
-    return events;
+
+    const total = await this.prisma.event.count();
+
+    return {
+      data: events,
+      meta: {
+        page,
+        take,
+        total,
+      },
+    };
   };
 
   getEventByTitle = async (title: string) => {

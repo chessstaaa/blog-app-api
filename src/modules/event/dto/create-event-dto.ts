@@ -45,6 +45,6 @@ export class CreateEventDTO {
 
   @IsNotEmpty()
   @IsBoolean()
-  @Transform(({ value }) => Boolean(value))
+  @Transform(({ value }) => value === "true")
   isFree!: boolean;
 }
