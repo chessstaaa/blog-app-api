@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { EventService } from "./event.service";
 import { GetEventsQuery } from "../../types/event";
+import { ApiError } from "../../utils/api-error";
 
 export class EventController {
   eventService: EventService;
@@ -24,6 +25,18 @@ export class EventController {
   getEventByTitle = async (req: Request, res: Response) => {
     const title = req.params.title;
     const result = await this.eventService.getEventByTitle(title);
+    return res.status(200).send(result);
+  };
+
+  createEvent = async (req: Request, res: Response) => {
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    const image = files.image?.[0];
+    if (!image) throw new ApiError("Image is required", 400);
+    const result = await this.eventService.createEvent(
+      req.body,
+      res.locals.user.id,
+      image
+    );
     return res.status(200).send(result);
   };
 }
