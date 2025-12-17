@@ -12,6 +12,16 @@ export class VoucherService {
     this.prisma = new PrismaService();
   }
 
+  getVouchers = async () => {
+    const vouchers = await this.prisma.voucher.findMany({
+      include: {
+        event: true,
+      },
+    });
+
+    return vouchers;
+  };
+
   getVouchersByEvent = async (query: GetVoucherQuery) => {
     const { event_id } = query;
 
@@ -28,7 +38,7 @@ export class VoucherService {
     return vouchers;
   };
 
-  createVoucher = async (body: CreateVoucherDTO) => {
+  createVoucher = async (body: CreateVoucherDTO, userId: number) => {
     let code = "";
     let check = false;
     if (!body.code) {
@@ -49,7 +59,7 @@ export class VoucherService {
       code = body.code;
     }
     await this.prisma.voucher.create({
-      data: { ...body, code, usedCount: 0 },
+      data: { ...body, code, usedCount: 0, organizerId: userId },
     });
 
     return { message: "Create voucher success" };
@@ -65,5 +75,19 @@ export class VoucherService {
     voucher.usedCount += 1;
 
     return { message: "Update used count voucher success" };
+  };
+
+  deleteVoucher = async (id: number) => {
+    const voucher = await this.prisma.voucher.findFirst({
+      where: { id },
+    });
+
+    if (!voucher) throw new ApiError("Voucher not found", 404);
+
+    await this.prisma.voucher.delete({
+      where: { id },
+    });
+
+    return { message: "Delete voucher success" };
   };
 }
