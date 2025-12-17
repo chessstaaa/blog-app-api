@@ -8,11 +8,6 @@ export class CreateVoucherDTO {
   @IsNotEmpty()
   @IsNumber()
   @Transform(({ value }) => parseInt(value))
-  organizerId!: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @Transform(({ value }) => parseInt(value))
   eventId!: number;
 
   @IsNotEmpty()
