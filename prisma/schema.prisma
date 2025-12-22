@@ -36,7 +36,7 @@ model Event {
   price          Int
   startAt        DateTime
   endAt          DateTime
-  totalSeats      Int
+  totalSeats     Int
   availableSeats Int
   isFree         Boolean
   image          String
@@ -95,7 +95,7 @@ model Transaction {
   voucher         Voucher  @relation(fields: [voucherId], references: [id])
   quantity        Int
   totalPrice      Int
-  status          String
+  status          Status @default(WAITING_FOR_PAYMENT)
   paymentProofUrl String
   expiresAt       DateTime
   createdAt       DateTime @default(now())
