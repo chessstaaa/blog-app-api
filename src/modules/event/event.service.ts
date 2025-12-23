@@ -63,7 +63,7 @@ export class EventService {
       data: {
         ...body,
         organizerId: userId,
-        availableSeats: body.totaSeats,
+        availableSeats: body.totalSeats,
         image: secure_url,
       },
     });
