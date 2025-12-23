@@ -41,7 +41,7 @@ export class CreateEventDTO {
   @IsNotEmpty()
   @IsNumber()
   @Transform(({ value }) => parseInt(value))
-  totaSeats!: number;
+  totalSeats!: number;
 
   @IsNotEmpty()
   @IsBoolean()
