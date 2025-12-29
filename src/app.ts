@@ -10,6 +10,7 @@ import { CategoryRouter } from "./modules/category/category.router";
 import { VoucherRouter } from "./modules/voucher/voucher.router";
 import { TransactionRouter } from "./modules/transaction/transaction.router";
 import { AttendeeRouter } from "./modules/attendee/attendee.router";
+import { UserRouter } from "./modules/user/user.router";
 
 export class App {
   app: Express;
@@ -34,6 +35,7 @@ export class App {
     const voucherRouter = new VoucherRouter();
     const transactionRouter = new TransactionRouter();
     const attendeeRouter = new AttendeeRouter();
+    const userRouter = new UserRouter();
 
     this.app.use("/event", eventRouter.getRouter());
     this.app.use("/auth", authRouter.getRouter());
@@ -42,6 +44,7 @@ export class App {
     this.app.use("/voucher", voucherRouter.getRouter());
     this.app.use("/transaction", transactionRouter.getRouter());
     this.app.use("/attendee", attendeeRouter.getRouter());
+    this.app.use("/user", userRouter.getRouter());
   }
 
   private handleError() {
