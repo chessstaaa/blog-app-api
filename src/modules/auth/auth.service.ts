@@ -5,6 +5,7 @@ import { comparePassword, hashPassword } from "../../utils/password";
 import { sign } from "jsonwebtoken";
 import { ForgotPasswordDTO } from "./dto/forgot-password.dto";
 import { MailService } from "../mail/mail.service";
+import { ResetPasswordDTO } from "./dto/reset-password.dto";
 
 export class AuthService {
   prisma: PrismaService;
@@ -75,16 +76,25 @@ export class AuthService {
 
     await this.mailService.sendEmail(
       body.email,
-
       "Forgot Password",
-
       "forgot-password",
-
       {
         resetUrl: `http://localhost:3000/reset-password/${accessToken}`,
       }
     );
 
     return { message: "send email success" };
+  };
+
+  resetPassword = async (body: ResetPasswordDTO, authUserId: number) => {
+    const hashedPassword = await hashPassword(body.password);
+
+    await this.prisma.user.update({
+      where: { id: authUserId },
+
+      data: { password: hashedPassword },
+    });
+
+    return { message: "reset password success" };
   };
 }
