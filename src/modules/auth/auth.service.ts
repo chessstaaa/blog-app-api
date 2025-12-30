@@ -3,12 +3,16 @@ import { ApiError } from "../../utils/api-error";
 import { PrismaService } from "../prisma/prisma.service";
 import { comparePassword, hashPassword } from "../../utils/password";
 import { sign } from "jsonwebtoken";
+import { ForgotPasswordDTO } from "./dto/forgot-password.dto";
+import { MailService } from "../mail/mail.service";
 
 export class AuthService {
   prisma: PrismaService;
+  mailService: MailService;
 
   constructor() {
     this.prisma = new PrismaService();
+    this.mailService = new MailService();
   }
 
   registerService = async (body: Pick<User, "name" | "email" | "password">) => {
@@ -54,5 +58,33 @@ export class AuthService {
       ...userWithoutPassword,
       accessToken,
     };
+  };
+
+  forgotPassword = async (body: ForgotPasswordDTO) => {
+    const user = await this.prisma.user.findFirst({
+      where: { email: body.email },
+    });
+
+    if (!user) throw new ApiError("User not found", 404);
+
+    const payload = { id: user.id };
+
+    const accessToken = sign(payload, process.env.JWT_SECRET_RESET!, {
+      expiresIn: "15m",
+    });
+
+    await this.mailService.sendEmail(
+      body.email,
+
+      "Forgot Password",
+
+      "forgot-password",
+
+      {
+        resetUrl: `http://localhost:3000/reset-password/${accessToken}`,
+      }
+    );
+
+    return { message: "send email success" };
   };
 }
