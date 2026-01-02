@@ -5,6 +5,8 @@ import { ForgotPasswordDTO } from "./dto/forgot-password.dto";
 import { JwtMiddleware } from "../../middlewares/jwt.middleware";
 import { ResetPasswordDTO } from "./dto/reset-password.dto";
 
+const jwt = new JwtMiddleware()
+
 export class AuthRouter {
   router: Router;
   authController: AuthController;
@@ -31,6 +33,9 @@ export class AuthRouter {
       validateBody(ResetPasswordDTO),
       this.authController.resetPassword
     );
+    this.router.get("/me", jwt.verifyToken(process.env.JWT_SECRET!), this.authController.me)
+    this.router.patch("/me", jwt.verifyToken(process.env.JWT_SECRET!), this.authController.updateMe)
+    
   };
 
   getRouter = () => {

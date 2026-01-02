@@ -1,22 +1,30 @@
-import { Router } from "express";
-import { ReviewController } from "./review.controller";
+import { Router } from "express"
+import { ReviewController } from "./review.controller"
+import { JwtMiddleware } from "../../middlewares/jwt.middleware"
+import { validateBody } from "../../middlewares/validation.middleware"
+import { CreateReviewDTO } from "./dto/create-review-dto"
 
 export class ReviewRouter {
-  router: Router;
-  reviewController: ReviewController;
+  router = Router()
+  controller = new ReviewController()
+  jwt = new JwtMiddleware()
 
   constructor() {
-    this.router = Router();
-    this.reviewController = new ReviewController();
-    this.initRoutes();
+    this.initRoutes()
   }
 
   private initRoutes = () => {
-    this.router.get("/", this.reviewController.getReviewsByEvent);
-    this.router.post("/", this.reviewController.createReview);
-  };
+    this.router.get("/", this.controller.getReviewsByEvent)
 
-  getRouter = () => {
-    return this.router;
-  };
+    this.router.post(
+      "/",
+      this.jwt.verifyToken(process.env.JWT_SECRET!),
+      validateBody(CreateReviewDTO),
+      this.controller.createReview
+    )
+  }
+
+  getRouter() {
+    return this.router
+  }
 }

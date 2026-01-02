@@ -13,9 +13,12 @@ export class JwtMiddleware {
         if (err) {
           throw new ApiError("Invalid token / token expired", 401);
         }
+
         res.locals.user = payload;
         next();
       });
     };
   };
 }
+
+export const authMiddleware = new JwtMiddleware().verifyToken(process.env.JWT_SECRET!);

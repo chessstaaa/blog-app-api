@@ -9,3 +9,5 @@ export class UploaderMiddleware {
     return multer({ storage, limits });
   };
 }
+
+export const uploader = new UploaderMiddleware().upload();

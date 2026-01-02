@@ -27,6 +27,7 @@ model User {
 
 model Event {
   id             Int           @id @default(autoincrement())
+  slug           String        @unique
   organizerId    Int
   organizer      User          @relation(fields: [organizerId], references: [id])
   title          String        @unique
@@ -61,14 +62,14 @@ model Category {
 }
 
 model Ticket {
-  id                Int           @id @default(autoincrement())
+  id                Int      @id @default(autoincrement())
   eventId           Int
-  event             Event         @relation(fields: [eventId], references: [id])
+  event             Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   name              String
   price             Int
   quantityAvailable Int
   transactions      Transaction[]
-  attendees         Attendee[]
+  transactionItems  TransactionItem[]
 
   @@map("tickets")
 }
@@ -78,7 +79,7 @@ model Review {
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
   eventId   Int
-  event     Event    @relation(fields: [eventId], references: [id])
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   rating    Int
   comment   String
   createdAt DateTime @default(now())
@@ -87,34 +88,66 @@ model Review {
 }
 
 model Transaction {
-  id              Int        @id @default(autoincrement())
+  id              Int               @id @default(autoincrement())
   userId          Int
-  user            User       @relation(fields: [userId], references: [id])
+  user            User              @relation(fields: [userId], references: [id])
+
   eventId         Int
-  event           Event      @relation(fields: [eventId], references: [id])
-  ticketId        Int
-  ticket          Ticket     @relation(fields: [ticketId], references: [id])
-  voucherId       Int
-  voucher         Voucher    @relation(fields: [voucherId], references: [id])
-  quantity        Int
-  totalPrice      Int
-  status          Status     @default(WAITING_FOR_PAYMENT)
-  paymentProofUrl String
+  event           Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  ticketId        Int?
+  ticket          Ticket?           @relation(fields: [ticketId], references: [id])
+
+  voucherId       Int?
+  voucher         Voucher?          @relation(fields: [voucherId], references: [id])
+
+  price           Int
+  pointsUsed      Int               @default(0)
+
+  status          TransactionStatus @default(WAITING_FOR_PAYMENT)
+  paymentProofUrl String?
   expiresAt       DateTime
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-  pointsUsed      Int
-  attendees       Attendee[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  items           TransactionItem[]
 
   @@map("transactions")
 }
 
+model TransactionItem {
+  id            Int          @id @default(autoincrement())
+
+  transactionId Int
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  ticketId Int
+  ticket   Ticket @relation(fields: [ticketId], references: [id])
+
+  name     String
+  price    Int
+  qty      Int
+  subtotal Int
+
+  @@map("transaction_items")
+}
+
+
+enum TransactionStatus {
+  WAITING_FOR_PAYMENT
+  WAITING_FOR_ADMIN_CONFIRMATION
+  PAID
+  REJECTED
+  EXPIRED
+  CANCELED
+}
+
 model Voucher {
-  id             Int           @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   organizerId    Int
-  organizer      User          @relation(fields: [organizerId], references: [id])
+  organizer      User     @relation(fields: [organizerId], references: [id])
   eventId        Int
-  event          Event         @relation(fields: [eventId], references: [id])
+  event          Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   code           String
   discountAmount Int
   startAt        DateTime
@@ -124,32 +157,4 @@ model Voucher {
   transactions   Transaction[]
 
   @@map("vouchers")
-}
-
-model Attendee {
-  id            Int         @id @default(autoincrement())
-  ticketCode    String      @unique
-  isCheckedIn   Boolean     @default(false)
-  checkedInAt   DateTime?
-  eventId       Int
-  event         Event       @relation(fields: [eventId], references: [id])
-  userId        Int
-  user          User        @relation(fields: [userId], references: [id])
-  transactionId Int
-  transaction   Transaction @relation(fields: [transactionId], references: [id])
-  ticketId      Int
-  ticket        Ticket      @relation(fields: [ticketId], references: [id])
-
-  createdAt DateTime @default(now())
-
-  @@map("attendees")
-}
-
-enum Status {
-  WAITING_FOR_PAYMENT
-  WAITING_FOR_ADMIN_CONFIRMATION
-  DONE
-  REJECTED
-  EXPIRED
-  CANCELED
 }

@@ -1,18 +1,15 @@
-import { Transform } from "class-transformer";
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsInt, IsNotEmpty, IsString, Max, Min } from "class-validator"
 
 export class CreateReviewDTO {
-  @IsNotEmpty()
-  @IsNumber()
-  @Transform(({ value }) => parseInt(value))
-  eventId!: number;
+  @IsInt()
+  eventId!: number
 
-  @IsNotEmpty()
-  @IsNumber()
-  @Transform(({ value }) => parseInt(value))
-  rating!: number;
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  rating!: number
 
   @IsNotEmpty()
   @IsString()
-  comment!: string;
+  comment!: string
 }
