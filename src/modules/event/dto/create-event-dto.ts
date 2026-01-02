@@ -48,16 +48,6 @@ export class CreateEventDTO {
   endAt!: string
 
   @IsNotEmpty()
-<<<<<<< HEAD
-  @IsNumber()
-  @Transform(({ value }) => parseInt(value))
-  totalSeats!: number;
-
-  @IsNotEmpty()
-  @IsBoolean()
-  @Transform(({ value }) => value === "true")
-  isFree!: boolean;
-=======
   @IsInt()
   @Min(1)
   @Transform(({ value }) => Number(value))
@@ -81,5 +71,4 @@ export class CreateEventDTO {
   @IsNotEmpty()
   @IsString()
   image!: string
->>>>>>> git-chesta
 }
