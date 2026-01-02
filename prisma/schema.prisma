@@ -62,14 +62,15 @@ model Category {
 }
 
 model Ticket {
-  id                Int      @id @default(autoincrement())
+  id                Int               @id @default(autoincrement())
   eventId           Int
-  event             Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event             Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
   name              String
   price             Int
   quantityAvailable Int
   transactions      Transaction[]
   transactionItems  TransactionItem[]
+  attendees         Attendee[]
 
   @@map("tickets")
 }
@@ -88,21 +89,21 @@ model Review {
 }
 
 model Transaction {
-  id              Int               @id @default(autoincrement())
-  userId          Int
-  user            User              @relation(fields: [userId], references: [id])
+  id     Int  @id @default(autoincrement())
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 
-  eventId         Int
-  event           Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId Int
+  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
-  ticketId        Int?
-  ticket          Ticket?           @relation(fields: [ticketId], references: [id])
+  ticketId Int?
+  ticket   Ticket? @relation(fields: [ticketId], references: [id])
 
-  voucherId       Int?
-  voucher         Voucher?          @relation(fields: [voucherId], references: [id])
+  voucherId Int?
+  voucher   Voucher? @relation(fields: [voucherId], references: [id])
 
-  price           Int
-  pointsUsed      Int               @default(0)
+  price      Int
+  pointsUsed Int @default(0)
 
   status          TransactionStatus @default(WAITING_FOR_PAYMENT)
   paymentProofUrl String?
@@ -110,13 +111,14 @@ model Transaction {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 
-  items           TransactionItem[]
+  items     TransactionItem[]
+  attendees Attendee[]
 
   @@map("transactions")
 }
 
 model TransactionItem {
-  id            Int          @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   transactionId Int
   transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
@@ -132,7 +134,6 @@ model TransactionItem {
   @@map("transaction_items")
 }
 
-
 enum TransactionStatus {
   WAITING_FOR_PAYMENT
   WAITING_FOR_ADMIN_CONFIRMATION
@@ -143,11 +144,11 @@ enum TransactionStatus {
 }
 
 model Voucher {
-  id             Int      @id @default(autoincrement())
+  id             Int           @id @default(autoincrement())
   organizerId    Int
-  organizer      User     @relation(fields: [organizerId], references: [id])
+  organizer      User          @relation(fields: [organizerId], references: [id])
   eventId        Int
-  event          Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event          Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
   code           String
   discountAmount Int
   startAt        DateTime
@@ -157,4 +158,22 @@ model Voucher {
   transactions   Transaction[]
 
   @@map("vouchers")
+}
+
+model Attendee {
+  id            Int         @id @default(autoincrement())
+  ticketCode    String      @unique
+  isCheckedIn   Boolean     @default(false)
+  checkedInAt   DateTime?
+  eventId       Int
+  event         Event       @relation(fields: [eventId], references: [id])
+  userId        Int
+  user          User        @relation(fields: [userId], references: [id])
+  transactionId Int
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  ticketId      Int
+  ticket        Ticket      @relation(fields: [ticketId], references: [id])
+  createdAt     DateTime    @default(now())
+
+  @@map("attendees")
 }
