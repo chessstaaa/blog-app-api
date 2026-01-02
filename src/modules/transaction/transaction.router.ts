@@ -1,31 +1,62 @@
-import { Router } from "express";
-import { JwtMiddleware } from "../../middlewares/jwt.middleware";
-import { validateBody } from "../../middlewares/validation.middleware";
-import { CreateTransactionDTO } from "./dto/create-transaction.dto";
-import { TransactionController } from "./transaction.controller";
+import { Router } from "express"
+import { JwtMiddleware } from "../../middlewares/jwt.middleware"
+import { validateBody } from "../../middlewares/validation.middleware"
+import { uploader } from "../../middlewares/uploader.middleware"
+import { CreateTransactionDTO } from "./dto/create-transaction.dto"
+import { TransactionController } from "./transaction.controller"
 
 export class TransactionRouter {
-  router: Router;
-  transactionController: TransactionController;
-  jwtMiddleware: JwtMiddleware;
+  router = Router()
+  controller = new TransactionController()
+  jwt = new JwtMiddleware()
 
   constructor() {
-    this.router = Router();
-    this.transactionController = new TransactionController();
-    this.jwtMiddleware = new JwtMiddleware();
-    this.initRoutes();
-  }
 
-  private initRoutes = () => {
+    // 🔥 CREATE TRANSACTION (CHECKOUT)
     this.router.post(
       "/",
-      this.jwtMiddleware.verifyToken(process.env.JWT_SECRET!),
+      this.jwt.verifyToken(process.env.JWT_SECRET!),
       validateBody(CreateTransactionDTO),
-      this.transactionController.createTransaction
-    );
-  };
+      this.controller.createTransaction
+    )
 
-  getRouter = () => {
-    return this.router;
-  };
+    // upload bukti bayar
+    this.router.post(
+      "/:id/proof",
+      this.jwt.verifyToken(process.env.JWT_SECRET!),
+      uploader.single("image"),
+      this.controller.uploadProof
+    )
+
+    // admin accept
+    this.router.post(
+      "/:id/accept",
+      this.jwt.verifyToken(process.env.JWT_SECRET!),
+      this.controller.accept
+    )
+
+    // admin reject
+    this.router.post(
+      "/:id/reject",
+      this.jwt.verifyToken(process.env.JWT_SECRET!),
+      this.controller.reject
+    )
+
+    this.router.get(
+      "/pending",
+      this.jwt.verifyToken(process.env.JWT_SECRET!),
+      this.controller.getPending
+    )
+
+    this.router.get(
+      "/my",
+      this.jwt.verifyToken(process.env.JWT_SECRET!),
+      this.controller.getMyHistory
+    )
+
+  }
+
+  getRouter() {
+    return this.router
+  }
 }

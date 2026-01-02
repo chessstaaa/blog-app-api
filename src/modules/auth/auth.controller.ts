@@ -18,4 +18,18 @@ export class AuthController {
     const result = await this.authService.loginService(req.body);
     return res.status(200).send(result);
   };
+
+  //Additional
+  me = async (_: Request, res: Response) => {
+    const userId = Number(res.locals.user.id)
+    const user = await this.authService.getProfile(userId)
+    res.send(user)
+  }
+
+  updateMe = async (req: Request, res: Response) => {
+    const userId = Number(res.locals.user.id)
+    const user = await this.authService.updateProfile(userId, req.body)
+    res.send(user)
+  }
+
 }

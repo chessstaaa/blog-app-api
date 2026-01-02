@@ -1,11 +1,33 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsArray, ValidateNested, IsInt, Min, IsOptional } from "class-validator"
+import { Type } from "class-transformer"
+
+class TicketItemDTO {
+  @IsInt()
+  ticketId!: number
+
+  @IsInt()
+  @Min(1)
+  qty!: number
+}
 
 export class CreateTransactionDTO {
-  @IsNotEmpty()
-  @IsNumber()
-  eventId!: number;
+  @IsInt()
+  eventId!: number
 
-  @IsNotEmpty()
-  @IsNumber()
-  qty!: number;
+  @IsOptional()
+  @IsInt()
+  voucherId?: number
+
+  @IsOptional()
+  @IsInt()
+  pointsUsed?: number
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TicketItemDTO)
+  items!: TicketItemDTO[]
+
+  // legacy (tidak divalidasi, aman)
+  ticketId?: number
+  qty?: number
 }

@@ -1,36 +1,45 @@
-import { Prisma } from "@prisma/client";
-import { ApiError } from "../../utils/api-error";
-import { PrismaService } from "../prisma/prisma.service";
-import { GetReviewsQuery } from "../../types/review";
-import { CreateReviewDTO } from "./dto/create-review-dto";
+import { Prisma } from "@prisma/client"
+import { ApiError } from "../../utils/api-error"
+import { PrismaService } from "../prisma/prisma.service"
+import { GetReviewsQuery } from "../../types/review"
+import { CreateReviewDTO } from "./dto/create-review-dto"
 
 export class ReviewService {
-  prisma: PrismaService;
-
-  constructor() {
-    this.prisma = new PrismaService();
-  }
+  prisma = new PrismaService()
 
   getReviewsByEvent = async (query: GetReviewsQuery) => {
-    const { event_id } = query;
-
-    const whereClause: Prisma.ReviewWhereInput = {
-      eventId: {
-        equals: event_id,
-      },
-    };
-
-    const reviews = await this.prisma.review.findMany({
-      where: whereClause,
-    });
-    return reviews;
-  };
+    return this.prisma.review.findMany({
+      where: { eventId: query.event_id },
+      include: { user: { select: { id: true, name: true } } }
+    })
+  }
 
   createReview = async (body: CreateReviewDTO, userId: number) => {
-    await this.prisma.review.create({
-      data: { ...body, userId },
-    });
+    const paid = await this.prisma.transaction.findFirst({
+      where: {
+        userId,
+        eventId: body.eventId,
+        status: "PAID"
+      }
+    })
 
-    return { message: "Create review success" };
-  };
+    if (!paid) throw new ApiError("You must attend event first", 403)
+
+    const exist = await this.prisma.review.findFirst({
+      where: { userId, eventId: body.eventId }
+    })
+
+    if (exist) throw new ApiError("You already reviewed this event", 400)
+
+    await this.prisma.review.create({
+      data: {
+        userId,
+        eventId: body.eventId,
+        rating: body.rating,
+        comment: body.comment
+      }
+    })
+
+    return { message: "Create review success" }
+  }
 }

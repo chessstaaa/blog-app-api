@@ -55,4 +55,38 @@ export class AuthService {
       accessToken,
     };
   };
+
+  // Additional
+  getProfile = async (id: number) => {
+    return this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        referralCode: true,
+        pointsBalance: true,
+        createdAt: true
+      }
+    })
+  }
+
+  updateProfile = async (id: number, body: Partial<User>) => {
+    if (body.password) body.password = await hashPassword(body.password)
+
+    return this.prisma.user.update({
+      where: { id },
+      data: body,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        referralCode: true,
+        pointsBalance: true
+      }
+    })
+  }
+
 }

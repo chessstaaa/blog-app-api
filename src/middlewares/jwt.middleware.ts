@@ -20,3 +20,5 @@ export class JwtMiddleware {
     };
   };
 }
+
+export const authMiddleware = new JwtMiddleware().verifyToken(process.env.JWT_SECRET!);
