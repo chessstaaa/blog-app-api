@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { Router } from "express";
 import { UserController } from "./user.controller";
 import { JwtMiddleware } from "../../middlewares/jwt.middleware";
@@ -16,6 +15,12 @@ export class UserRouter {
   }
 
   private initRoutes = () => {
+    this.router.get(
+      "/me",
+      this.jwtMiddleware.verifyToken(process.env.JWT_SECRET!),
+      this.userController.me
+    );
+    this.router.get("/:id", this.userController.public);
     this.router.get(
       "/",
       this.jwtMiddleware.verifyToken(process.env.JWT_SECRET!),
@@ -36,28 +41,4 @@ export class UserRouter {
   getRouter = () => {
     return this.router;
   };
-=======
-import { Router } from "express"
-import { JwtMiddleware } from "../../middlewares/jwt.middleware"
-import { UserController } from "./user.controller"
-
-export class UserRouter {
-  router = Router()
-  jwt = new JwtMiddleware()
-  controller = new UserController()
-
-  constructor() {
-    this.router.get(
-      "/me",
-      this.jwt.verifyToken(process.env.JWT_SECRET!),
-      this.controller.me
-    )
-
-    this.router.get("/:id", this.controller.public)
-  }
-
-  getRouter() {
-    return this.router
-  }
->>>>>>> git-chesta
 }

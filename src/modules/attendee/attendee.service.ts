@@ -12,32 +12,26 @@ export class AttendeeService {
   async getAttendeesByEventId(eventIdStr: string, query: GetAttendeeQuery) {
     const { page, take, search } = query;
 
-    const whereClause: Prisma.AttendeeWhereInput = {
+    const whereClause: Prisma.TransactionWhereInput = {
       eventId: parseInt(eventIdStr),
-      transaction: { status: "DONE" },
+      status: "PAID",
     };
 
     if (search) {
       whereClause.OR = [
         { user: { name: { contains: search, mode: "insensitive" } } },
         { user: { email: { contains: search, mode: "insensitive" } } },
-        { ticketCode: { contains: search, mode: "insensitive" } },
       ];
     }
 
-    const attendees = await this.prisma.attendee.findMany({
+    const attendees = await this.prisma.transaction.findMany({
       where: whereClause,
       take,
       skip: (page - 1) * take,
-      include: {
-        user: { select: { name: true, email: true } },
-        ticket: { select: { name: true } },
-        transaction: { select: { totalPrice: true, createdAt: true } },
-      },
       orderBy: { createdAt: "desc" },
     });
 
-    const total = await this.prisma.attendee.count();
+    const total = await this.prisma.transaction.count();
 
     return {
       data: attendees,
