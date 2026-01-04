@@ -72,7 +72,14 @@ export class VoucherService {
 
     if (!voucher) throw new ApiError("Voucher not found", 404);
 
-    voucher.usedCount += 1;
+    await this.prisma.voucher.update({
+      where: { code },
+      data: {
+        usedCount: {
+          increment: 1,
+        },
+      },
+    });
 
     return { message: "Update used count voucher success" };
   };

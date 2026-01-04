@@ -6,6 +6,7 @@ import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { CreateEventDTO } from "./dto/create-event-dto";
 import { plainToInstance } from "class-transformer";
 import slugify from "slugify";
+import { UpdateEventDTO } from "./dto/update-event-dto";
 
 export class EventService {
   prisma: PrismaService;
@@ -35,6 +36,9 @@ export class EventService {
       where: whereClause,
       take,
       skip: (page - 1) * take,
+      include: {
+        category: true,
+      },
     });
 
     const total = await this.prisma.event.count({
@@ -76,7 +80,11 @@ export class EventService {
     return event;
   };
 
-  createEvent = async (body: CreateEventDTO, file?: Express.Multer.File) => {
+  createEvent = async (
+    body: CreateEventDTO,
+    userId: number,
+    file?: Express.Multer.File
+  ) => {
     const slug = slugify(body.title, { lower: true });
 
     let imageUrl = body.image;
@@ -92,6 +100,7 @@ export class EventService {
         ...body,
         image: imageUrl,
         slug,
+        organizerId: userId,
         startAt: new Date(body.startAt),
         endAt: new Date(body.endAt),
         availableSeats: body.totalSeats,
@@ -99,6 +108,44 @@ export class EventService {
     });
 
     return { message: "create event success" };
+  };
+
+  updateEvent = async (
+    body: UpdateEventDTO,
+    userId: number,
+    file?: Express.Multer.File
+  ) => {
+    const getData = this.prisma.event.findFirst({
+      where: {
+        id: body.id,
+      },
+    });
+
+    if (!getData) throw new ApiError("Event not found", 404);
+
+    const slug = slugify(body.title, { lower: true });
+
+    let imageUrl = body.image;
+
+    if (file) {
+      const uploadResult = await this.cloudinaryService.upload(file);
+      imageUrl = uploadResult.secure_url;
+    }
+
+    await this.prisma.event.update({
+      where: { id: body.id },
+      data: {
+        ...body,
+        image: imageUrl,
+        slug,
+        organizerId: userId,
+        startAt: new Date(body.startAt),
+        endAt: new Date(body.endAt),
+        availableSeats: body.totalSeats,
+      },
+    });
+
+    return { message: "update event success" };
   };
 
   deleteEvent = async (id: number) => {

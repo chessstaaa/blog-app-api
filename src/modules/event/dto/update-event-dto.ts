@@ -9,7 +9,12 @@ import {
   Min,
 } from "class-validator";
 
-export class CreateEventDTO {
+export class UpdateEventDTO {
+  @IsNotEmpty()
+  @IsNumber()
+  @Transform(({ value }) => Number(value))
+  id!: number;
+
   @IsNotEmpty()
   @IsString()
   title!: string;

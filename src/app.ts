@@ -14,6 +14,7 @@ import { TransactionRouter } from "./modules/transaction/transaction.router";
 import { TicketRouter } from "./modules/ticket/ticket.router";
 import { UserRouter } from "./modules/user/user.router";
 import { DashboardRouter } from "./modules/dashboard/dashboard.router";
+import { AttendeeRouter } from "./modules/attendee/attendee.router";
 
 export class App {
   app: Express;
@@ -48,7 +49,8 @@ export class App {
     const transactionRouter = new TransactionRouter();
     const ticketRouter = new TicketRouter();
     const userRouter = new UserRouter();
-    const dashbaordRouter = new DashboardRouter();
+    const dashboardRouter = new DashboardRouter();
+    const attendeeRouter = new AttendeeRouter();
 
     this.app.use("/event", eventRouter.getRouter());
     this.app.use("/auth", authRouter.getRouter());
@@ -58,7 +60,8 @@ export class App {
     this.app.use("/transactions", transactionRouter.getRouter());
     this.app.use("/tickets", ticketRouter.getRouter());
     this.app.use("/users", userRouter.getRouter());
-    this.app.use("/dashboard", dashbaordRouter.getRouter());
+    this.app.use("/dashboard", dashboardRouter.getRouter());
+    this.app.use("/attendee", attendeeRouter.getRouter());
   }
 
   private handleError() {
