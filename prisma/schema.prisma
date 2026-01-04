@@ -145,7 +145,7 @@ model Voucher {
   organizer      User          @relation(fields: [organizerId], references: [id])
   eventId        Int
   event          Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  code           String
+  code           String        @unique
   discountAmount Int
   startAt        DateTime
   endAt          DateTime

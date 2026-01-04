@@ -32,6 +32,12 @@ export class EventRouter {
       uploader.single("image"),
       this.eventController.createEvent
     );
+    this.router.patch(
+      "/",
+      authMiddleware,
+      uploader.single("image"),
+      this.eventController.updateEvent
+    );
     this.router.delete(
       "/:id",
       authMiddleware,

@@ -4,6 +4,7 @@ import { GetEventsQuery } from "../../types/event";
 import { ApiError } from "../../utils/api-error";
 import { plainToInstance } from "class-transformer";
 import { CreateEventDTO } from "./dto/create-event-dto";
+import { UpdateEventDTO } from "./dto/update-event-dto";
 
 export class EventController {
   eventService: EventService;
@@ -49,6 +50,24 @@ export class EventController {
     });
 
     const result = await this.eventService.createEvent(
+      body,
+      res.locals.user.id,
+      req.file
+    );
+    return res.status(201).send(result);
+  };
+
+  updateEvent = async (req: Request, res: Response) => {
+    // 🔥 HARD FIX BOOLEAN
+    if (typeof req.body.isFree === "string") {
+      req.body.isFree = req.body.isFree === "true";
+    }
+
+    let body = plainToInstance(UpdateEventDTO, req.body, {
+      enableImplicitConversion: true,
+    });
+
+    const result = await this.eventService.updateEvent(
       body,
       res.locals.user.id,
       req.file
