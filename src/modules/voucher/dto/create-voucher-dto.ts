@@ -1,5 +1,11 @@
 import { Transform } from "class-transformer";
-import { IsDateString, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from "class-validator";
 
 export class CreateVoucherDTO {
   @IsString()
@@ -8,7 +14,7 @@ export class CreateVoucherDTO {
   @IsNotEmpty()
   @IsNumber()
   @Transform(({ value }) => parseInt(value))
-  eventId!: number;
+  eventId!: number | null;
 
   @IsNotEmpty()
   @IsNumber()

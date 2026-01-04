@@ -6,17 +6,23 @@ import { sign } from "jsonwebtoken";
 import { ForgotPasswordDTO } from "./dto/forgot-password.dto";
 import { MailService } from "../mail/mail.service";
 import { ResetPasswordDTO } from "./dto/reset-password.dto";
+import { generateReferralCode } from "../../utils/referal";
+import { VoucherService } from "../voucher/voucher.service";
 
 export class AuthService {
   prisma: PrismaService;
   mailService: MailService;
+  voucherService: VoucherService;
 
   constructor() {
     this.prisma = new PrismaService();
     this.mailService = new MailService();
+    this.voucherService = new VoucherService();
   }
 
-  registerService = async (body: Pick<User, "name" | "email" | "password">) => {
+  registerService = async (
+    body: Pick<User, "name" | "email" | "password" | "referralCode">
+  ) => {
     const user = await this.prisma.user.findFirst({
       where: { email: body.email },
     });
@@ -25,15 +31,62 @@ export class AuthService {
 
     const hashedPassword = await hashPassword(body.password);
 
-    await this.prisma.user.create({
+    let referralCode = "";
+    let isReferralCodeUnique = false;
+
+    while (!isReferralCodeUnique) {
+      referralCode = generateReferralCode(7);
+
+      const existingCode = await this.prisma.user.findUnique({
+        where: { referralCode },
+      });
+
+      if (!existingCode) isReferralCodeUnique = true;
+    }
+
+    const userCreated = await this.prisma.user.create({
       data: {
         ...body,
         password: hashedPassword,
         role: "user",
-        referralCode: "",
+        referralCode: referralCode,
         pointsBalance: 0,
       },
     });
+
+    if (body.referralCode) {
+      const referralUser = await this.prisma.user.findUnique({
+        where: { referralCode: body.referralCode },
+      });
+
+      if (!referralUser) throw new ApiError("referral code invalid", 404);
+
+      const dateNow = referralUser.pointsExpired
+        ? new Date(referralUser.pointsExpired)
+        : new Date();
+      dateNow.setMonth(dateNow.getMonth() + 3);
+      await this.prisma.user.update({
+        where: { referralCode: body.referralCode },
+        data: {
+          pointsBalance: { increment: 10000 },
+          pointsExpired: dateNow,
+        },
+      });
+
+      const dateNowReferral = new Date();
+      dateNowReferral.setMonth(dateNowReferral.getMonth() + 3);
+      await this.voucherService.createVoucher(
+        {
+          code: "",
+          eventId: null,
+          discountAmount: 10000,
+          startAt: new Date().toISOString(),
+          endAt: dateNowReferral.toISOString(),
+          usageLimit: 1,
+        },
+        userCreated.id
+      );
+    }
 
     return { message: "register success" };
   };
@@ -108,13 +161,13 @@ export class AuthService {
         role: true,
         referralCode: true,
         pointsBalance: true,
-        createdAt: true
-      }
-    })
-  }
+        createdAt: true,
+      },
+    });
+  };
 
   updateProfile = async (id: number, body: Partial<User>) => {
-    if (body.password) body.password = await hashPassword(body.password)
+    if (body.password) body.password = await hashPassword(body.password);
 
     return this.prisma.user.update({
       where: { id },
@@ -125,9 +178,8 @@ export class AuthService {
         email: true,
         role: true,
         referralCode: true,
-        pointsBalance: true
-      }
-    })
-  }
-
+        pointsBalance: true,
+      },
+    });
+  };
 }

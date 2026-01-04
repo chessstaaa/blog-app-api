@@ -109,7 +109,22 @@ export class TransactionService {
 
     if (!transaction) throw new ApiError("Transaction not found", 404);
 
-    transaction.status = "PAID";
+    this.prisma.transaction.update({
+      where: { id },
+      data: {
+        status: "PAID",
+      },
+    });
+
+    const dateNow = new Date();
+    dateNow.setMonth(dateNow.getMonth() + 3);
+    this.prisma.user.update({
+      where: { id: transaction.userId },
+      data: {
+        pointsBalance: Math.floor(transaction.price * 0.1),
+        pointsExpired: dateNow,
+      },
+    });
 
     return { message: "Accept payment success" };
   };
