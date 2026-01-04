@@ -4,7 +4,6 @@ import { ApiError } from "../../utils/api-error";
 import { PrismaService } from "../prisma/prisma.service";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { CreateEventDTO } from "./dto/create-event-dto";
-import { saveEventImage } from "../../utils/file";
 import { plainToInstance } from "class-transformer";
 import slugify from "slugify";
 
@@ -80,12 +79,25 @@ export class EventService {
     return event;
   };
 
-  createEvent = async (body: CreateEventDTO, userId: number) => {
+  createEvent = async (
+    body: CreateEventDTO,
+    userId: number,
+    file?: Express.Multer.File
+  ) => {
     const slug = slugify(body.title, { lower: true });
+
+    let imageUrl = body.image;
+
+    // Upload image to Cloudinary if file provided
+    if (file) {
+      const uploadResult = await this.cloudinaryService.upload(file);
+      imageUrl = uploadResult.secure_url;
+    }
 
     await this.prisma.event.create({
       data: {
         ...body,
+        image: imageUrl,
         slug,
         organizerId: userId,
         startAt: new Date(body.startAt),

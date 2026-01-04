@@ -8,6 +8,7 @@ export class TicketRouter {
   constructor() {
     this.router.get("/", this.controller.getByEvent)
     this.router.post("/", this.controller.create)
+    this.router.post("/bulk", this.controller.createBulk)
     this.router.delete('/:id', this.controller.deleteTicket);
   }
 
