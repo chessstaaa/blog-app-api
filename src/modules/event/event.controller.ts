@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { EventService } from "./event.service";
 import { GetEventsQuery } from "../../types/event";
 import { ApiError } from "../../utils/api-error";
-import { saveEventImage } from "../../utils/file";
 import { plainToInstance } from "class-transformer";
 import { CreateEventDTO } from "./dto/create-event-dto";
 
@@ -49,9 +48,7 @@ export class EventController {
       enableImplicitConversion: true,
     });
 
-    if (req.file) body.image = await saveEventImage(req.file);
-
-    const result = await this.eventService.createEvent(body);
+    const result = await this.eventService.createEvent(body, req.file);
     return res.status(201).send(result);
   };
 

@@ -18,6 +18,17 @@ export class TicketService {
     return this.prisma.ticket.create({ data: body })
   }
 
+  createBulkTickets = async (tickets: Array<{
+    eventId: number
+    name: string
+    price: number
+    quantityAvailable: number
+  }>) => {
+    return this.prisma.ticket.createMany({
+      data: tickets
+    })
+  }
+
   deleteTicket = async (id: number) => {
     return this.prisma.ticket.delete({ where: { id } })
   }

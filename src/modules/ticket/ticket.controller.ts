@@ -15,6 +15,11 @@ export class TicketController {
     return res.status(201).send(ticket)
   }
 
+  createBulk = async (req: Request, res: Response) => {
+    const tickets = await this.service.createBulkTickets(req.body)
+    return res.status(201).send(tickets)
+  }
+
   deleteTicket = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
