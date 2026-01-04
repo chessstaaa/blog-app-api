@@ -20,7 +20,6 @@ model User {
   reviews       Review[]
   transactions  Transaction[]
   vouchers      Voucher[]
-  attendees     Attendee[]
 
   @@map("users")
 }
@@ -48,7 +47,6 @@ model Event {
   reviews        Review[]
   transactions   Transaction[]
   vouchers       Voucher[]
-  attendees      Attendee[]
 
   @@map("events")
 }
@@ -70,7 +68,6 @@ model Ticket {
   quantityAvailable Int
   transactions      Transaction[]
   transactionItems  TransactionItem[]
-  attendees         Attendee[]
 
   @@map("tickets")
 }
@@ -111,8 +108,7 @@ model Transaction {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 
-  items     TransactionItem[]
-  attendees Attendee[]
+  items TransactionItem[]
 
   @@map("transactions")
 }
@@ -158,22 +154,4 @@ model Voucher {
   transactions   Transaction[]
 
   @@map("vouchers")
-}
-
-model Attendee {
-  id            Int         @id @default(autoincrement())
-  ticketCode    String      @unique
-  isCheckedIn   Boolean     @default(false)
-  checkedInAt   DateTime?
-  eventId       Int
-  event         Event       @relation(fields: [eventId], references: [id])
-  userId        Int
-  user          User        @relation(fields: [userId], references: [id])
-  transactionId Int
-  transaction   Transaction @relation(fields: [transactionId], references: [id])
-  ticketId      Int
-  ticket        Ticket      @relation(fields: [ticketId], references: [id])
-  createdAt     DateTime    @default(now())
-
-  @@map("attendees")
 }
