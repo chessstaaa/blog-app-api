@@ -51,7 +51,10 @@ export class EventController {
 
     if (req.file) body.image = await saveEventImage(req.file);
 
-    const result = await this.eventService.createEvent(body);
+    const result = await this.eventService.createEvent(
+      body,
+      res.locals.user.id
+    );
     return res.status(201).send(result);
   };
 

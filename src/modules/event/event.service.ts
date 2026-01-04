@@ -36,6 +36,9 @@ export class EventService {
       where: whereClause,
       take,
       skip: (page - 1) * take,
+      include: {
+        category: true,
+      },
     });
 
     const total = await this.prisma.event.count({
@@ -77,13 +80,14 @@ export class EventService {
     return event;
   };
 
-  createEvent = async (body: CreateEventDTO) => {
+  createEvent = async (body: CreateEventDTO, userId: number) => {
     const slug = slugify(body.title, { lower: true });
 
     await this.prisma.event.create({
       data: {
         ...body,
         slug,
+        organizerId: userId,
         startAt: new Date(body.startAt),
         endAt: new Date(body.endAt),
         availableSeats: body.totalSeats,

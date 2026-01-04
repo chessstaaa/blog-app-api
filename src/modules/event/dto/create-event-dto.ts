@@ -1,4 +1,4 @@
-import { Transform } from "class-transformer"
+import { Transform } from "class-transformer";
 import {
   IsBoolean,
   IsDateString,
@@ -7,68 +7,63 @@ import {
   IsString,
   IsInt,
   Min,
-} from "class-validator"
+} from "class-validator";
 
 export class CreateEventDTO {
+  @IsNotEmpty()
+  @IsString()
+  title!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  description!: string;
 
   @IsNotEmpty()
   @IsInt()
   @Transform(({ value }) => Number(value))
-  organizerId!: number
+  categoryId!: number;
 
   @IsNotEmpty()
   @IsString()
-  title!: string
-
-  @IsNotEmpty()
-  @IsString()
-  description!: string
-
-  @IsNotEmpty()
-  @IsInt()
-  @Transform(({ value }) => Number(value))
-  categoryId!: number
-
-  @IsNotEmpty()
-  @IsString()
-  location!: string
+  location!: string;
 
   @IsNotEmpty()
   @IsInt()
   @Min(0)
   @Transform(({ value }) => Number(value))
-  price!: number
+  price!: number;
 
   @IsNotEmpty()
   @IsDateString()
-  startAt!: string
+  startAt!: string;
 
   @IsNotEmpty()
   @IsDateString()
-  endAt!: string
+  endAt!: string;
 
   @IsNotEmpty()
   @IsInt()
   @Min(1)
   @Transform(({ value }) => Number(value))
-  totalSeats!: number
+  totalSeats!: number;
 
   // akan dipakai juga sebagai availableSeats default
   @IsNotEmpty()
   @IsInt()
   @Min(1)
   @Transform(({ value }) => Number(value))
-  availableSeats!: number
+  availableSeats!: number;
 
   @IsNotEmpty()
   @IsBoolean()
   @Transform(({ value }) => {
-    if (value === "true" || value === true || value === 1 || value === "1") return true
-    return false
+    if (value === "true" || value === true || value === 1 || value === "1")
+      return true;
+    return false;
   })
-  isFree!: boolean
+  isFree!: boolean;
 
   @IsNotEmpty()
   @IsString()
-  image!: string
+  image!: string;
 }
