@@ -53,7 +53,11 @@ export class TransactionRouter {
       this.controller.getMyHistory
     );
 
-    this.router.get("/dashboard", this.controller.getTransactions);
+    this.router.get(
+      "/dashboard",
+      this.jwt.verifyToken(process.env.JWT_SECRET!),
+      this.controller.getTransactions
+    );
   }
 
   getRouter() {

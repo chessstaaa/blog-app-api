@@ -10,7 +10,7 @@ export class VoucherController {
   }
 
   getVouchers = async (req: Request, res: Response) => {
-    const result = await this.voucherService.getVouchers();
+    const result = await this.voucherService.getVouchers(res.locals.user.id);
     return res.status(200).send(result);
   };
 

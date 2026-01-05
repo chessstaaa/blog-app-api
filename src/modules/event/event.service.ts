@@ -39,6 +39,9 @@ export class EventService {
       include: {
         category: true,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     const total = await this.prisma.event.count({

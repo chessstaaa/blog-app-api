@@ -9,7 +9,13 @@ export class DashboardController {
   }
 
   getOverview = async (req: Request, res: Response) => {
-    const result = await this.dashboardService.getOverview(res.locals.user.id);
+    const filter = req.query.filter as "year" | "month" | "day";
+    const date = req.query.date as string;
+    const result = await this.dashboardService.getOverview(
+      res.locals.user.id,
+      filter,
+      date
+    );
     return res.status(200).send(result);
   };
 }

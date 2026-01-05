@@ -226,11 +226,19 @@ export class TransactionService {
     });
   };
 
-  getTransaction = async () => {
+  getTransaction = async (userId: number) => {
     const transactions = await this.prisma.transaction.findMany({
+      where: {
+        event: {
+          organizerId: userId,
+        },
+      },
       include: {
         event: true,
         user: true,
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     });
     return transactions;
