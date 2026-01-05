@@ -36,14 +36,20 @@ export const checkExpiredTransactionScheduler = () => {
         });
 
         // 4. kembalikan seat ke event
-        await tx.event.update({
-          where: { id: trx.eventId },
-          data: {
-            availableSeat: {
-              increment: trx.qty,
-            },
-          },
+        const ticket = await tx.ticket.findUnique({
+          where: { id: trx.ticketId ?? undefined },
         });
+
+        if (ticket) {
+          await tx.event.update({
+            where: { id: trx.eventId },
+            data: {
+              availableSeats: {
+                increment: ticket.quantityAvailable,
+              },
+            },
+          });
+        }
       });
     }
 
