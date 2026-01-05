@@ -40,7 +40,7 @@ export class TransactionController {
   };
 
   getTransactions = async (req: Request, res: Response) => {
-    const result = await this.service.getTransaction();
+    const result = await this.service.getTransaction(res.locals.user.id);
     return res.status(200).send(result);
   };
 }

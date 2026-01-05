@@ -12,8 +12,14 @@ export class VoucherService {
     this.prisma = new PrismaService();
   }
 
-  getVouchers = async () => {
+  getVouchers = async (userId: number) => {
     const vouchers = await this.prisma.voucher.findMany({
+      where: {
+        organizerId: userId,
+        event: {
+          organizerId: userId,
+        },
+      },
       include: {
         event: true,
       },

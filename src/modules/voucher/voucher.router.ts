@@ -15,7 +15,11 @@ export class VoucherRouter {
   }
 
   private initRoutes = () => {
-    this.router.get("/", this.voucherController.getVouchers);
+    this.router.get(
+      "/",
+      this.jwtMiddleware.verifyToken(process.env.JWT_SECRET!),
+      this.voucherController.getVouchers
+    );
     this.router.get("/:id", this.voucherController.getVouchersByEvent);
     this.router.post(
       "/",
