@@ -1,0 +1,122 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pembayaran Berhasil</title>
+    <style>
+      body { margin: 0; padding: 0; background-color: #f4f4f5; font-family:
+      'Helvetica Neue', Helvetica, Arial, sans-serif; } table { border-collapse:
+      collapse; width: 100%; } .button:hover { background-color: #2563eb
+      !important; }
+    </style>
+  </head>
+  <body style="margin: 0; padding: 0; background-color: #f4f4f5;">
+
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr>
+        <td align="center" style="padding: 20px 0;">
+
+          <table
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            width="100%"
+            style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);"
+          >
+
+            <tr>
+              <td
+                align="center"
+                style="background-color: #10b981; padding: 30px 20px;"
+              >
+                <h1
+                  style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;"
+                >Pembayaran Berhasil! 🎉</h1>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding: 30px 20px; color: #333333;">
+                <p style="font-size: 16px; margin-bottom: 20px;">Halo
+                  <strong>{{userName}}</strong>,</p>
+
+                <p
+                  style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;"
+                >
+                  Terima kasih! Pembayaran Anda untuk transaksi
+                  <strong>#{{transactionId}}</strong>
+                  telah berhasil kami terima. Berikut adalah ringkasan pesanan
+                  Anda:
+                </p>
+
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  width="100%"
+                  style="background-color: #f8fafc; border-radius: 6px; margin-bottom: 25px;"
+                >
+                  <tr>
+                    <td style="padding: 15px;">
+                      <table
+                        border="0"
+                        cellpadding="5"
+                        cellspacing="0"
+                        width="100%"
+                      >
+                        <tr>
+                          <td
+                            style="color: #64748b; font-size: 14px;"
+                          >Event:</td>
+                          <td
+                            style="font-weight: bold; font-size: 14px;"
+                          >{{eventName}}</td>
+                        </tr>
+                        <tr>
+                          <td
+                            style="color: #64748b; font-size: 14px;"
+                          >Tanggal:</td>
+                          <td
+                            style="font-weight: bold; font-size: 14px;"
+                          >{{eventDate}}</td>
+                        </tr>
+                        <tr>
+                          <td style="color: #64748b; font-size: 14px;">Jumlah
+                            Tiket:</td>
+                          <td
+                            style="font-weight: bold; font-size: 14px;"
+                          >{{ticketQty}} Tiket</td>
+                        </tr>
+                        <tr>
+                          <td
+                            style="border-top: 1px solid #e2e8f0; padding-top: 10px; color: #64748b; font-size: 14px;"
+                          >Total Bayar:</td>
+                          <td
+                            style="border-top: 1px solid #e2e8f0; padding-top: 10px; color: #10b981; font-weight: bold; font-size: 16px;"
+                          >{{totalAmount}}</td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr>
+              <td
+                align="center"
+                style="background-color: #f1f5f9; padding: 20px; font-size: 12px; color: #64748b;"
+              >
+                <p style="margin: 0;">©
+                  {{currentYear}}
+                  Eventify. All rights reserved.</p>
+                <p style="margin: 5px 0 0;">Butuh bantuan? Balas email ini.</p>
+              </td>
+            </tr>
+          </table>
+
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

@@ -122,7 +122,6 @@ export class AuthService {
     if (!user) throw new ApiError("User not found", 404);
 
     const payload = { id: user.id };
-
     const accessToken = sign(payload, process.env.JWT_SECRET_RESET!, {
       expiresIn: "15m",
     });

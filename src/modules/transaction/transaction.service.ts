@@ -1,9 +1,11 @@
 import { ApiError } from "../../utils/api-error";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateTransactionDTO } from "./dto/create-transaction.dto";
+import { MailService } from "../mail/mail.service";
 
 export class TransactionService {
   prisma = new PrismaService();
+  mailService = new MailService();
 
   createTransaction = async (body: CreateTransactionDTO, userId: number) => {
     return this.prisma.$transaction(async (tx) => {
@@ -105,20 +107,38 @@ export class TransactionService {
       where: {
         id,
       },
+      include: {
+        user: { select: { name: true, email: true } },
+        event: { select: { title: true, createdAt: true } },
+        items: true,
+      },
     });
 
     if (!transaction) throw new ApiError("Transaction not found", 404);
 
-    this.prisma.transaction.update({
+    await this.prisma.transaction.update({
       where: { id },
       data: {
         status: "PAID",
       },
     });
 
+    const totalTicket = transaction.items.reduce((total, item) => {
+      return total + item.qty;
+    }, 0);
+
+    await this.prisma.event.update({
+      where: { id: transaction.eventId },
+      data: {
+        availableSeats: {
+          decrement: totalTicket,
+        },
+      },
+    });
+
     const dateNow = new Date();
     dateNow.setMonth(dateNow.getMonth() + 3);
-    this.prisma.user.update({
+    await this.prisma.user.update({
       where: { id: transaction.userId },
       data: {
         pointsBalance: Math.floor(transaction.price * 0.1),
@@ -126,13 +146,33 @@ export class TransactionService {
       },
     });
 
+    await this.mailService.sendEmail(
+      transaction.user.email,
+      "Payment Success",
+      "email-payment-success",
+      {
+        userName: transaction.user.name,
+        transactionId: transaction.id,
+        eventName: transaction.event.title,
+        eventDate: transaction.event.createdAt,
+        ticketQty: totalTicket,
+        totalAmount: transaction.price,
+        currentYear: new Date().getFullYear().toString(),
+      }
+    );
+
     return { message: "Accept payment success" };
   };
 
   rejectTransaction = async (id: number) => {
     const trx = await this.prisma.transaction.findFirst({
       where: { id },
-      include: { items: true },
+      include: {
+        user: { select: { name: true, email: true } },
+        event: { select: { title: true } },
+        items: true,
+        voucher: true,
+      },
     });
 
     if (!trx) throw new ApiError("Transaction not found", 404);
@@ -144,7 +184,26 @@ export class TransactionService {
       });
     }
 
-    trx.status = "REJECTED";
+    await this.prisma.transaction.update({
+      where: { id },
+      data: {
+        status: "REJECTED",
+      },
+    });
+
+    await this.mailService.sendEmail(
+      trx.user.email,
+      "Payment Rejected",
+      "email-payment-rejected",
+      {
+        userName: trx.user.name,
+        transactionId: trx.id,
+        eventName: trx.event.title,
+        pointsUsed: trx.pointsUsed,
+        voucherCode: trx.voucher?.code || "",
+        currentYear: new Date().getFullYear().toString(),
+      }
+    );
 
     return { message: "Reject payment success" };
   };

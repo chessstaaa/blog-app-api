@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { AuthService } from "./auth.service";
-import { GetEventsQuery } from "../../types/event";
 
 export class AuthController {
   authService: AuthService;
@@ -29,18 +28,17 @@ export class AuthController {
     const result = await this.authService.resetPassword(req.body, authUserId);
     return res.status(200).send(result);
   };
-  
+
   //Additional
   me = async (_: Request, res: Response) => {
-    const userId = Number(res.locals.user.id)
-    const user = await this.authService.getProfile(userId)
-    res.send(user)
-  }
+    const userId = Number(res.locals.user.id);
+    const user = await this.authService.getProfile(userId);
+    res.send(user);
+  };
 
   updateMe = async (req: Request, res: Response) => {
-    const userId = Number(res.locals.user.id)
-    const user = await this.authService.updateProfile(userId, req.body)
-    res.send(user)
-  }
-
+    const userId = Number(res.locals.user.id);
+    const user = await this.authService.updateProfile(userId, req.body);
+    res.send(user);
+  };
 }
